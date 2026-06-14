@@ -13,6 +13,12 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:6.0.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Rest Assured
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+
+    // Playwright Java
+    testImplementation 'com.microsoft.playwright:playwright:1.44.0'
 }
 
 test {
