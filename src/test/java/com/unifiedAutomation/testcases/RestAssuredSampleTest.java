@@ -1,21 +1,33 @@
 package com.unifiedAutomation.testcases;
 
+import com.unifiedAutomation.utils.PropertiesLoader;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.*;
 
 public class RestAssuredSampleTest {
+    static Map<String, Properties> propertiesMap;
+
+    @BeforeAll
+    public static void init() {
+        propertiesMap = PropertiesLoader.load();
+    }
 
     @Test
     void testGetRequest() {
         // Sample GET request to JSONPlaceholder API
         Response response = RestAssured
                 .given()
-                    .baseUri("https://jsonplaceholder.typicode.com")
+                    .baseUri(propertiesMap.get("RestConfig").getProperty("hostname"))
                     .basePath("/posts/1")
-                    .contentType("application/json")
+                    .contentType(propertiesMap.get("RestConfig").getProperty("contentType"))
                 .when()
                     .get()
                 .then()
@@ -33,17 +45,14 @@ public class RestAssuredSampleTest {
 
     @Test
     void testPostRequest() {
+        File jsonFile = new File("src/test/resources/json/post_request_body.json");
         // Sample POST request to create a new post
         Response response = RestAssured
                 .given()
-                    .baseUri("https://jsonplaceholder.typicode.com")
-                    .basePath("/posts")
-                    .contentType("application/json")
-                    .body("{\n" +
-                            "  \"title\": \"Test Post\",\n" +
-                            "  \"body\": \"This is a test post created with RestAssured\",\n" +
-                            "  \"userId\": 1\n" +
-                            "}")
+                    .baseUri(propertiesMap.get("RestConfig").getProperty("hostname"))
+                    .basePath(propertiesMap.get("RestConfig").getProperty("postsEndpoint"))
+                    .contentType(propertiesMap.get("RestConfig").getProperty("contentType"))
+                    .body(jsonFile)
                 .when()
                     .post()
                 .then()
@@ -63,10 +72,10 @@ public class RestAssuredSampleTest {
         // Sample GET request with query parameters
         Response response = RestAssured
                 .given()
-                    .baseUri("https://jsonplaceholder.typicode.com")
+                    .baseUri(propertiesMap.get("RestConfig").getProperty("hostname"))
                     .basePath("/posts")
                     .queryParam("userId", 1)
-                    .contentType("application/json")
+                    .contentType(propertiesMap.get("RestConfig").getProperty("contentType"))
                 .when()
                     .get()
                 .then()

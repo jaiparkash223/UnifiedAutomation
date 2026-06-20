@@ -1,17 +1,21 @@
 package com.unifiedAutomation.testcases;
 
 import com.microsoft.playwright.*;
+import com.unifiedAutomation.utils.PropertiesLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import java.nio.file.Paths;
+import java.util.*;
 
 public class PlaywrightSampleTest {
     static Browser browser;
     static BrowserContext context;
+    static Map<String, Properties> propertiesMap;
 
     @BeforeAll
-    static void launchBrowser() {
+    static void init() {
+        propertiesMap = PropertiesLoader.load();
         Playwright playwright = Playwright.create();
         browser = playwright.chromium().launch();
         context = browser.newContext();
@@ -28,20 +32,21 @@ public class PlaywrightSampleTest {
         // Create a new page
         Page page = context.newPage();
 
+
         try {
             // Navigate to Google
-            page.navigate("https://www.google.com");
+            page.navigate(propertiesMap.get("PlaywrightConfig").getProperty("url"));
             System.out.println("Navigated to Google.com");
 
             // Wait for the search box to be available
-            page.waitForSelector("textarea[name='q']");
+            page.waitForSelector(propertiesMap.get("PlaywrightConfig").getProperty("textarea.css"));
 
             // Type "playwright" in the search box
-            page.fill("textarea[name='q']", "playwright");
+            page.fill(propertiesMap.get("PlaywrightConfig").getProperty("textarea.css"), propertiesMap.get("PlaywrightConfig").getProperty("textarea.dataToSearch"));
             System.out.println("Typed 'playwright' in the search box");
 
             // Take a screenshot
-            page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get("screenshot.png")));
+            page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get(propertiesMap.get("PlaywrightConfig").getProperty("screenShotFileName"))));
             System.out.println("Screenshot saved");
 
         } finally {
